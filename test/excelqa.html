@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>和服务端交互</title>
+</head>
+<body>
+    关键字:<input type="text" name="keyword" id="keyword"><br/>
+    开始编号:<input type="text" name="start" id="start"><br/>
+    数量:<input type="text" name="count" id="count"><br/>
+    <button id="btn_select" type="button">查询</button><br/>
+	<br/>
+	
+	
+	<form action="" id="form_insert" name="form_insert">
+	问题描述：<br/><textarea id="desc" name="desc" maxlength="200" rows="10" cols="30"></textarea><br/>
+	请选择您要上传的文件：<input id="question_file" type="file" name="file"/><button type="button" onclick="question_removeFile()">移除</button><br/>
+	email:<input type="text" name="email" id="email"><br/>
+    phone:<input type="text" name="phone" id="phone"><br/>
+	<button id="btn_insert" type="button">新增</button><br/>
+	</form><br/>
+	
+	
+	
+	删除id:<input type="text" name="del_id" id="del_id"><br/>
+	<button id="btn_del" type="button">删除</button><br/>
+	<br/>
+	
+	
+	<form action="" id="form_update" name="form_update">
+	更新id:<input type="text" name="id" id="update_id"><br/>
+	请选择您要上传的文件：<input id="file_update" type="file" name="file"/><button type="button" onclick="answer_removeFile()">移除</button><br/>
+	通知:<input type="text" name="notify" id="notify"><br/>
+	<button id="btn_update" type="button">更新</button><br/>
+	</form>
+	<br/>
+	
+	
+	名字:<input type="text" name="name" id="username"><br/>
+    密码:<input type="text" name="password" id="password"><br/>
+    <button id="btn_login" type="button">Login</button><br/>
+	<button id="btn_logout" type="button">Logout</button><br/>
+	<button id="btn_check_login" type="button">Check Login</button><br/>
+	<br/>
+	
+	
+	
+	<a href="question_file/051197aa6a3568e308998183683e9c9f.png" download="微信图片_20191126085855.png">下载问题</a><br/>
+	<a href="question_file/051197aa6a3568e308998183683e9c9f.png" download="微信图片_20191126085855.png">下载答案</a><br/>
+	
+	<br/>
+	<p>提示信息: <span id="txtHint"></span></p> 
+	
+	
+	
+</body>
+</html>
+<script>
+
+
+var btn_select = document.getElementById('btn_select');
+var btn_insert = document.getElementById('btn_insert');
+var btn_del = document.getElementById('btn_del');
+var btn_update = document.getElementById('btn_update');
+
+var btn_login = document.getElementById('btn_login');
+var btn_logout = document.getElementById('btn_logout');
+var btn_check_login = document.getElementById('btn_check_login');
+
+
+
+
+var keyword = document.getElementById('keyword');
+var start = document.getElementById('start');
+var count = document.getElementById('count');
+
+var form_insert = document.getElementById('form_insert');
+var desc = document.getElementById('desc');
+var question_file = document.getElementById('question_file');
+var email = document.getElementById('email');
+var phone = document.getElementById('phone');
+
+var del_id = document.getElementById('del_id');
+
+var form_update = document.getElementById('form_update');
+var update_id = document.getElementById('update_id');
+var file_update = document.getElementById('file_update');
+var notify = document.getElementById('notify');
+
+var username = document.getElementById('username');
+var password = document.getElementById('password');
+
+
+
+var hint = document.getElementById('txtHint');
+
+
+function question_removeFile(){
+	hint.innerHTML = "移除：" + question_file.value;
+	question_file.value = "";
+}
+		
+function answer_removeFile(){
+	hint.innerHTML = "移除：" + file_update.value;
+	file_update.value = "";
+}
+
+		
+btn_select.onclick = function () {
+
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+				hint.innerHTML = xhr.responseText;
+			
+                // console.log(xhr.responseText)
+                // 将其转化为js对象
+                obj = JSON.parse(xhr.responseText);
+				//console.log(obj);
+				
+            } else if (xhr.status == 404) {
+				hint.innerHTML = "没有发现文件、查询或URl";
+			}
+        }
+    }
+	xhr.open('get', 'search.php?type=excel&keyword='+keyword.value+'&start='+start.value+'&count='+count.value+'&t=' + Math.random());
+    xhr.send();
+}
+
+btn_insert.onclick = function () {
+
+	var formData = new FormData(form_insert);
+	formData.append('type', 'excel')
+	
+	var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+				hint.innerHTML = xhr.responseText;
+			
+                // console.log(xhr.responseText)
+                // 将其转化为js对象
+                //obj = JSON.parse(xhr.responseText)
+				
+            } else if (xhr.status == 404) {
+				hint.innerHTML = "没有发现文件、查询或URl";
+			}
+        }
+    }
+	xhr.open('post', 'addquestion.php');
+    xhr.send(formData);
+	
+	
+}
+
+btn_del.onclick = function () {
+
+	var formData = new FormData();
+	formData.append('id', del_id.value)
+	
+	var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+				hint.innerHTML = xhr.responseText;
+			
+                // console.log(xhr.responseText)
+                // 将其转化为js对象
+                //obj = JSON.parse(xhr.responseText)
+				
+            } else if (xhr.status == 404) {
+				hint.innerHTML = "没有发现文件、查询或URl";
+			}
+        }
+    }
+	xhr.open('post', 'delquestion.php');
+	xhr.send(formData);
+	
+	
+}
+
+
+btn_update.onclick = function () {
+
+	var formData = new FormData(form_update);
+	
+	var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+				hint.innerHTML = xhr.responseText;
+			
+                // console.log(xhr.responseText)
+                // 将其转化为js对象
+                //obj = JSON.parse(xhr.responseText)
+				
+            } else if (xhr.status == 404) {
+				hint.innerHTML = "没有发现文件、查询或URl";
+			}
+        }
+    }
+	xhr.open('post', 'editquestion.php');
+    xhr.send(formData);
+	
+	
+}
+
+
+btn_login.onclick = function () {
+
+	var formData = new FormData();
+	formData.append('name', username.value);
+	formData.append('password', password.value);
+	
+	var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+				hint.innerHTML = xhr.responseText;
+			
+                // console.log(xhr.responseText)
+                // 将其转化为js对象
+                //obj = JSON.parse(xhr.responseText)
+				
+            } else if (xhr.status == 404) {
+				hint.innerHTML = "没有发现文件、查询或URl";
+			}
+        }
+    }
+	xhr.open('post', 'answerlogin.php');
+	xhr.send(formData);
+	
+	
+}
+
+btn_logout.onclick = function () {
+
+	var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+				hint.innerHTML = xhr.responseText;
+			
+                // console.log(xhr.responseText)
+                // 将其转化为js对象
+                //obj = JSON.parse(xhr.responseText)
+				
+            } else if (xhr.status == 404) {
+				hint.innerHTML = "没有发现文件、查询或URl";
+			}
+        }
+    }
+	xhr.open('post', 'answerlogout.php');
+	xhr.send();
+	
+	
+}
+
+btn_check_login.onclick = function () {
+
+	var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+				hint.innerHTML = xhr.responseText;
+			
+                // console.log(xhr.responseText)
+                // 将其转化为js对象
+                //obj = JSON.parse(xhr.responseText)
+				
+            } else if (xhr.status == 404) {
+				hint.innerHTML = "没有发现文件、查询或URl";
+			}
+        }
+    }
+	xhr.open('post', 'answerchecklogin.php');
+	xhr.send();
+	
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+</script>

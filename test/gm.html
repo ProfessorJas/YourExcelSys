@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>回答者管理</title>
+</head>
+<body>
+    GM码:<input type="text" name="code" id="code"><br/>
+    名字:<input type="text" name="name" id="username"><br/>
+    密码:<input type="text" name="password" id="password"><br/>
+    <button id="btn_add" type="button">新增</button><br/>
+	
+	<p>提示信息: </p><br/>
+	<p><span id="txtHint"></span></p><br/> 
+	
+	
+	
+</body>
+</html>
+
+
+<script>
+
+
+var btn_add = document.getElementById('btn_add');
+
+
+var code = document.getElementById('code');
+var username = document.getElementById('username');
+var password = document.getElementById('password');
+
+var hint = document.getElementById('txtHint');
+
+
+btn_add.onclick = function () {
+
+	var formData = new FormData();
+	formData.append('code', code.value);
+	formData.append('name', username.value);
+	formData.append('password', password.value);
+	
+	
+	var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4) {
+            if (xhr.status == 200) {
+				hint.innerHTML = xhr.responseText;
+			
+                // console.log(xhr.responseText)
+                // 将其转化为js对象
+                //obj = JSON.parse(xhr.responseText)
+				
+            } else if (xhr.status == 404) {
+				hint.innerHTML = "没有发现文件、查询或URl";
+			}
+        }
+    }
+	xhr.open('post', 'addanswer.php');
+	xhr.send(formData);
+	
+	
+}
+
+</script>
