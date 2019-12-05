@@ -4,13 +4,12 @@
 
 - [1.查询问题](#search)
 - [2.添加问题](#addquestion)
-- [3.修改问题](#edi- tquestion)
-- [4.删除问题](#del- question)
+- [3.修改问题](#editquestion)
+- [4.删除问题](#delquestion)
 - [5.回答者登入](#answerlogin)
 - [6.回答者登出](#answerlogout)
 - [7.检查回答者是否登入](#answerchecklogin)
 - [8.新增回答者](#addanswer)
-
 
 ---
 <span id = "search"></span>
