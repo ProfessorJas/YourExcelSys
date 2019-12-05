@@ -9,7 +9,6 @@
 		public $errorMsg;
 		public $timestamp;
 
-
 		function __construct($ecode = 0, $errorMsg = "") {
 			$this->ecode = $ecode;
 			$this->errorMsg = $errorMsg;
@@ -23,7 +22,7 @@
 	if(isset($_SESSION['answer_name'])){
         $returnObj = new ResultObject();
     } else {
-		$returnObj = new ResultObject(-1, '没有登入');
+		$returnObj = new ResultObject(-1, '');
 	}
 	
 	echo json_encode($returnObj, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES);

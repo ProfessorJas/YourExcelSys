@@ -8,14 +8,12 @@
 		public $ecode;
 		public $errorMsg;
 		public $timestamp;
-		public $name;
 
 
 		function __construct($ecode = 0, $errorMsg = "") {
 			$this->ecode = $ecode;
 			$this->errorMsg = $errorMsg;
 			$this->timestamp = date('Y-m-d H:i:s',time());
-			$this->name = "";
 		}
 	}
 
