@@ -19,6 +19,7 @@
 		$id = mysql_entities_fix_string($id);
 		$filename = mysql_entities_fix_string($filename);
 		$fileurl = mysql_entities_fix_string($fileurl);
+		$answerer = mysql_entities_fix_string($answerer);
 
 		
 		//connect to MySQL
@@ -55,7 +56,7 @@
 		$old_answer_file_url = $row["answer_file_url"];
 		
 		//update record info
-		$query = "UPDATE question SET answer_file_url='$fileurl', answerer='$answerer', update_time=NOW() WHERE id=$id";
+		$query = "UPDATE question SET answer_file_name='$filename', answer_file_url='$fileurl', answerer='$answerer', update_time=NOW() WHERE id=$id";
 		//print_r($query);
 		//exit();
 		$result = $conn_mysqli->query($query);
@@ -74,6 +75,13 @@
 			unlink($old_answer_file_url);
 		}
 		
+		
+		//
+		if($notify === "email") {
+			
+		} elseif ($notify === "phone") {
+			
+		}
 
 		//
 		$returnObj = new ResultObject();

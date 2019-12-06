@@ -321,6 +321,7 @@
 > |ecode   |int    |返回结果状态。0：已登入；小于0：未登入。   |
 > |errorMsg  |string | 出错信息                  |
 > |timestamp |string |时间戳                         |
+> |name |string |登入的用户名 |
 
 ###### 接口示例
 > 请求：/answerchecklogin.php
@@ -330,7 +331,8 @@
 {
     "ecode":0,
     "errorMsg":"",
-    "timestamp":"2019-12-05 10:00:09"
+    "timestamp":"2019-12-05 10:00:09",
+    "name":"柯南"
 }
 ```
 ---
