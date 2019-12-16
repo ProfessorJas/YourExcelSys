@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Your Excel System</title>
+
+	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">  
+	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+	<link rel="stylesheet" href="css/style.css">
+
+
+	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
+
+
+
+    
+</head>
+
+<body onload="load();">
+
+    <div id="content">
+	
+		<nav class="navbar navbar-light bg-faded">
+			<div class="form-group pull-right">
+				<form class="form-inline"  style="display:none" id="form_login">
+					<label for="form_login_name">用户名:</label>
+					<input type="text" class="form-control input-sm" placeholder="用户名" name="name" id="form_login_name">
+					<label for="form_login_password">密码</label>
+					<input type="text" class="form-control input-sm" placeholder="密码" name="password" id="form_login_password">
+					<button type="button" class="btn btn-default btn-sm" onclick="do_login()">登入</button>
+				</form>
+			</div>
+			
+			<div class="form-group pull-right">
+				<form class="form-inline"  style="display:none" id="form_logout">
+					<label for="form_logout_name">用户名:</label>
+					<input type="text" class="form-control input-sm" readonly name="name" id="form_logout_name">
+					<button type="button" class="btn btn-default btn-sm" onclick="do_logout()">登出</button>
+				</form>
+			</div>
+		</nav>
+	
+		<nav class="navbar navbar-light bg-faded">
+			<div class="form-group">
+				<form class="form-inline">
+					<input type="text" class="form-control" placeholder="编号/文件名/问题描述" name="keyword" id="keyword">
+					<button type="button" class="btn btn-primary" onclick="select_pg_first()">查询</button>
+					<button type="button" class="btn btn-success" onclick="open_addnew_modal()"><span class="glyphicon glyphicon-plus">添加问题</button>
+					
+					<!-- <button type="button" class="btn btn-primary" onclick="test()">test</button> -->
+					
+				</form>
+			</div>
+		</nav>
+
+		<ul class="nav nav-pills" id="search_type_tab">
+		  <li class="active" data-search-type="excel"><a href="javascript:void(0);" onclick="change_search_type(0);">Excel</a></li>
+		  <li data-search-type="vba"><a href="javascript:void(0);" onclick="change_search_type(1);">VBA</a></li>
+		</ul>
+	
+		</br>
+	
+		<div class="form-group">
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr>
+						<th>问题ID</th>
+						<th>问题文件</th>
+						<th>问题描述</th>
+						<th>答案文件</th>
+						<th>更新时间</th>
+						<th>解决者</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				
+				<tbody id="question_table"></tbody>
+				
+			</table>
+		</div>
+			
+		<nav class="navbar navbar-light bg-faded">	
+			<div class="form-group pull-left">
+				<select class="form-control" onchange="select_count_onchange()" id="select_count">
+					<option value="0">10</option>
+					<option value="1">20</option>
+					<option value="2">30</option>
+				</select>
+			</div>
+		
+			<div class="form-group pull-right" id="pg_root">
+				<ul class="pagination">
+					<li id="pg_li_first"><a href="javascript:void(0);" onclick="select_pg_first();" id="pg_a_first">首页</a></li>
+					<li id="pg_li_pre"><a href="javascript:void(0);" id="pg_a_pre">上一页</a></li>
+					<li id="pg_li_1"><a href="javascript:void(0);" onclick="select_pg_num(&quot;#pg_a_1&quot;);" id="pg_a_1">1</a></li>
+					<li id="pg_li_2"><a href="javascript:void(0);" onclick="select_pg_num(&quot;#pg_a_2&quot;);" id="pg_a_2">2</a></li>
+					<li id="pg_li_3"><a href="javascript:void(0);" id="pg_a_3">3</a></li>
+					<li id="pg_li_4"><a href="javascript:void(0);" onclick="select_pg_num(&quot;#pg_a_4&quot;);" id="pg_a_4">4</a></li>
+					<li id="pg_li_5"><a href="javascript:void(0);" onclick="select_pg_num(&quot;#pg_a_5&quot;);" id="pg_a_5">5</a></li>
+					<li id="pg_li_next"><a href="javascript:void(0);" id="pg_a_next">下一页</a></li>
+					<li id="pg_li_end"><a href="javascript:void(0);" onclick="select_pg_end();" id="pg_a_end">尾页</a></li>
+				</ul>
+			</div>
+
+		
+		</nav>	
+
+    </div>
+    
+	
+	<!-- 新建问题 模态框 -->
+	<div class="modal fade" id="addnew_modal" tabindex="-1" role="dialog" aria-labelledby="addnew_modal_label" aria-hidden="true" data-backdrop="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+			
+				<div class="modal-header" style="background-color:#c0c0ff;">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true" >x</button>
+					<h4 class="modal-title" id="addnew_modal_label">新建问题</h4>
+				</div>
+				
+				<div class="modal-body">
+					<form role="form" id="form_addnew">
+						<div class="form-group">
+							<label for="form_addnew_desc" class="control-label">问题描述:</label>
+							<textarea class="form-control" rows="5" placeholder="输入描述（不超过200字）" name="desc" id="form_addnew_desc"></textarea>
+					   </div>
+
+						<div class="form-group">
+							<label for="form_addnew_file">上传文件:</label>
+							<table>
+								<tr>
+									<td>
+										<input type="file" class="form-control-file" accept=".xlsx, .zip" name="file" id="form_addnew_file"></input>
+									</td>
+									<td>
+										<button type="button" class="close" data-toggle="tooltip" data-placement="top" title="删除所选文件" onclick="btn_addnew_remove_file_on_click()">x</button>
+									</td>
+								</tr>
+							</table>
+							<p class="help-block">* 请上传xlsx文件，多个文件请压缩为zip再上传再上传</p>
+						</div>
+						<div class="form-group">
+							<label for="form_addnew_email" class="control-label">Email:</label>
+							<input type="text" class="form-control" placeholder="输入Email地址" name="email" id="form_addnew_email"></input>
+						</div>
+						<div class="form-group">
+							<label for="form_addnew_phone" class="control-label">Tel:</label>
+							<input type="text" class="form-control" placeholder="输入电话号码" name="phone" id="form_addnew_phone"></input>
+						</div>
+						<span class="help-block alert-danger" id="form_addnew_hint"></span>
+  
+					</form>
+				</div>
+				
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" id="btn_addnew_submit" disabled="disabled" onclick="btn_addnew_submit_on_click()">提交</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- 上传答案 模态框 -->
+	<div class="modal fade" id="edit_modal" tabindex="-1" role="dialog" aria-labelledby="edit_modal_label" aria-hidden="true" data-backdrop="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+			
+				<div class="modal-header" style="background-color:#c0c0ff;">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true" >x</button>
+					<h4 class="modal-title" id="edit_modal_label">上传问题答案</h4>
+				</div>
+				
+				<div class="modal-body">
+					<form role="form" id="form_edit">
+						<div class="form-group">
+							<label for="form_edit_id" class="control-label" id="form_edit_id_label">问题ID:</label>
+							<input type="text" class="form-control" readonly name="id" id="form_edit_id"></input>
+						</div>
+
+						<div class="form-group">
+							<label for="form_edit_file">上传文件:</label>
+							<input type="file" class="form-control-file" accept=".xlsx, .zip" name="file" id="form_edit_file"></input>
+							<p class="help-block">* 请上传xlsx文件，多个文件请压缩为zip再上传再上传</p>
+						</div>
+						
+						<div class="form-check">
+							<label class="form-check-label">
+								<input class="form-check-input" type="checkbox" value="" id="check_form_edit_email">
+								发送Email通知提问者
+							</label>
+						</div>
+
+						<div class="form-check">
+							<label class="form-check-label">
+								<input class="form-check-input" type="checkbox" value="" id="check_form_edit_phone">
+								发送短信通知提问者
+							</label>
+						</div>
+						
+						<span class="help-block alert-danger" id="form_edit_hint"></span>
+  
+					</form>
+				</div>
+				
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" id="btn_edit_submit" disabled="disabled" onclick="btn_edit_submit_on_click()">提交</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 删除 模态框 -->
+	<div class="modal fade" id="del_modal" tabindex="-1" role="dialog" aria-labelledby="del_modal_label" aria-hidden="true" data-backdrop="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+			
+				<div class="modal-header" style="background-color:#c0c0ff;">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true" >x</button>
+					<h4 class="modal-title" id="del_modal_label">是否删除问题</h4>
+				</div>
+				
+				<div class="modal-body">
+					<form role="form" id="form_del">
+						<div class="form-group">
+							<label for="form_del_id" class="control-label" id="form_del_id_label">问题ID:</label>
+							<input type="text" class="form-control" readonly name="id" id="form_del_id"></input>
+						</div>
+
+						<span class="help-block alert-danger" id="form_del_hint"></span>
+  
+					</form>
+				</div>
+				
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary" id="btn_del_submit" disabled="disabled" onclick="btn_del_submit_on_click()">确定</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	<!-- 警告信息 模态框 -->
+	<div class="modal fade" id="info_modal" tabindex="-1" role="dialog" aria-labelledby="info_modal_label" aria-hidden="true" data-backdrop="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+			
+				<div class="modal-header" style="background-color:#ffa0a0;">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true" >x</button>
+					<h4 class="modal-title" id="info_modal_label">警告</h4>
+				</div>
+				
+				<div class="modal-body" id="info_text">
+					警告信息
+				</div>
+				
+				<div class="modal-footer">
+					<button type="button" class="btn btn-info" id="btn_info" data-dismiss="modal">确定</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+
+
+
+
+    <script>
+		
+		var enable_debug = true;	//调试开关
+		
+		var curentTotalPage = 0;
+		var curentPage = 0;
+		var currentSearchType = "excel";
+		var isLogin = false;
+		
+	
+		//调试用log
+		function debug_log(obj) {
+			if(!enable_debug) {
+				return;
+			}
+			console.log(obj);
+		}
+		
+		//调试formData对象数据
+		function debug_formdata(formData) {
+			if(!enable_debug) {
+				return;
+			}
+			
+			for(var pair of formData.entries()) {
+				debug_log(pair[0]+ ', '+ pair[1]); 
+			}
+		}
+		
+		
+		//处理标签变化
+		function change_search_type (idx) {
+			$("#search_type_tab li").each(function(){
+				$(this).removeClass("active");
+			});
+			$("#search_type_tab li:eq("+idx+")").addClass("active");
+
+			var search_type = $("#search_type_tab li:eq("+idx+")").attr("data-search-type");
+			var ischanged = (search_type != currentSearchType);
+			currentSearchType = search_type;
+			
+			if(ischanged) {
+				select_pg_first();
+			}
+			
+		}
+		
+		//移除选择的文件
+		function btn_addnew_remove_file_on_click() {
+			$("#form_addnew_file").val("");
+		}
+		
+		//弹出警告信息对话框
+		function open_info_modal(text) {
+			$("#info_text").text(text);
+			$("#info_modal").modal('show');
+		}
+		
+		
+		
+		//弹出新建问题对话框
+		function open_addnew_modal() {
+			var type = getSearchType();
+			var typeStr = "";
+			if(type == "excel") {
+				typeStr = "Excel";
+			} else if(type == "vba") {
+				typeStr = "VBA";
+			} else {
+				typeStr = "";
+			}
+			$("#addnew_modal_label").text("新建"+typeStr+"问题答案");
+			$("#btn_addnew_submit").attr("disabled",false);
+			$("#form_addnew_hint").text("");
+			$("#form_addnew_file").val("");
+			$("#addnew_modal").modal('show');
+		}
+		
+		//处理新建问题提交按钮的点击事件
+		function btn_addnew_submit_on_click() {
+			check_addnew();
+			do_addnew();
+        }
+	
+		//弹出回答问题对话框
+		function open_edit_modal(id) {
+			var type = getSearchType();
+			var typeStr = "";
+			if(type == "excel") {
+				typeStr = "Excel";
+			} else if(type == "vba") {
+				typeStr = "VBA";
+			} else {
+				typeStr = "";
+			}
+			$("#edit_modal_label").text("上传"+typeStr+"问题答案");
+			$("#form_edit_id").val(id);
+			$("#btn_edit_submit").attr("disabled",false);
+			$("#form_edit_hint").text("");
+			$("#check_form_edit_email").get(0).checked = false;
+			$("#check_form_edit_phone").get(0).checked = false;
+			$("#form_edit_file").val("");
+			$("#edit_modal").modal('show');
+		}
+		
+		//处理回答问题提交按钮的点击事件
+		function btn_edit_submit_on_click() {
+			check_edit();
+			do_edit();
+        }
+		
+	
+		//弹出删除问题对话框
+		function open_del_modal(id) {
+			var type = getSearchType();
+			var typeStr = "";
+			if(type == "excel") {
+				typeStr = "Excel";
+			} else if(type == "vba") {
+				typeStr = "VBA";
+			} else {
+				typeStr = "";
+			}
+			$("#del_modal_label").text("是否删除"+typeStr+"问题");
+			$("#form_del_id").val(id);
+			$("#btn_del_submit").attr("disabled",false);
+			$("#form_del_hint").text("");
+			$("#del_modal").modal('show');
+		}
+		
+		//处理删除问题提交按钮的点击事件
+		function btn_del_submit_on_click() {
+			do_del();
+        }
+		
+		
+		//提交新建问题前的数据检查
+		function check_addnew() {
+			
+			
+			
+		}
+		
+		//提交新建问题
+		function do_addnew() {
+			
+			$("#btn_addnew_submit").attr("disabled", true);
+		
+			var form_addnew = document.getElementById('form_addnew');
+			var formData = new FormData(form_addnew);
+			var type = getSearchType();
+			formData.append('type', type);
+
+			var xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = function () {
+				if (xhr.readyState == 4) {
+					if (xhr.status == 200) {
+						var jsonObj = JSON.parse(xhr.responseText);
+						addnew_complete(jsonObj);
+
+					} else if (xhr.status == 404) {
+						$("#btn_addnew_submit").attr("disabled", false);
+						$("#form_addnew_hint").text("提交失败: 网络错误 404。");
+					}
+				}
+			}
+			xhr.open('post', 'addquestion.php');
+			xhr.send(formData);
+
+		}
+	
+		//处理新建问题返回的数据
+		function addnew_complete(jsonObj) {
+			if(jsonObj.ecode < 0) {
+				$("#form_addnew_hint").text("提交失败: "+jsonObj.errorMsg);
+				$("#btn_addnew_submit").attr("disabled", false);
+			} else {
+				$("#form_addnew_hint").text("");
+				$("#addnew_modal").modal('hide');
+			}
+		}
+	
+	
+		//提交回答问题前的数据检查
+		function check_edit() {
+			
+			
+			
+		}
+		
+		//提交回答问题
+		function do_edit() {
+			
+			$("#btn_edit_submit").attr("disabled", true);
+		
+			var form_edit = document.getElementById('form_edit');
+			var formData = new FormData(form_edit);
+			
+			var notifyStr = "";
+			if ($("#check_form_edit_email").get(0).checked && $("#check_form_edit_phone").get(0).checked) {
+				notifyStr = "all";
+			} else if($("#check_form_edit_email").get(0).checked) {
+				notifyStr = "email";
+			} else if($("#check_form_edit_phone").get(0).checked) {
+				notifyStr = "phone";
+			}
+			formData.append('notify', notifyStr);
+
+			var xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = function () {
+				if (xhr.readyState == 4) {
+					if (xhr.status == 200) {
+						var jsonObj = JSON.parse(xhr.responseText);
+						edit_complete(jsonObj);
+
+					} else if (xhr.status == 404) {
+						$("#btn_edit_submit").attr("disabled", false);
+						$("#form_edit_hint").text("提交失败: 网络错误 404。");
+					}
+				}
+			}
+			xhr.open('post', 'editquestion.php');
+			xhr.send(formData);
+			
+		}
+	
+		//处理回答问题返回的数据
+		function edit_complete(jsonObj) {
+			if(jsonObj.ecode < 0) {
+				$("#form_edit_hint").text("提交失败："+jsonObj.errorMsg);
+				$("#btn_edit_submit").attr("disabled", false);
+			} else {
+				$("#form_edit_hint").text("");
+				$("#edit_modal").modal('hide');
+				select_pg_first();
+			}
+		
+			
+		}
+		
+		
+		//提交删除问题
+		function do_del() {
+			
+			$("#btn_del_submit").attr("disabled", true);
+		
+			var form_del = document.getElementById('form_del');
+			var formData = new FormData(form_del);
+			
+			var xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = function () {
+				if (xhr.readyState == 4) {
+					if (xhr.status == 200) {
+						var jsonObj = JSON.parse(xhr.responseText);
+						del_complete(jsonObj);
+
+					} else if (xhr.status == 404) {
+						$("#btn_del_submit").attr("disabled", false);
+						$("#form_del_hint").text("删除失败: 网络错误 404。");
+					}
+				}
+			}
+			xhr.open('post', 'delquestion.php');
+			xhr.send(formData);
+			
+		}
+	
+		//处理删除问题返回的数据
+		function del_complete(jsonObj) {
+			if(jsonObj.ecode < 0) {
+				$("#form_del_hint").text("删除失败："+jsonObj.errorMsg);
+				$("#btn_del_submit").attr("disabled", false);
+			} else {
+				$("#form_del_hint").text("");
+				$("#del_modal").modal('hide');
+				select_pg_first();
+			}
+			
+		}	
+	
+	
+	
+		//检查回答者是否已经登入
+		function check_login() {
+			var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        var jsonObj = JSON.parse(xhr.responseText);
+						if(jsonObj.ecode == 0) {
+							login_success(jsonObj.name);
+						} else {
+							login_failed();
+						}
+                    } else if (xhr.status == 404) {
+                        login_failed();
+                    }
+                }
+            }
+            xhr.open('post', 'answerchecklogin.php');
+            xhr.send();
+		}
+	
+		//回答者登入成功
+		function login_success(name) {
+			$("#form_logout_name").val(name);
+			$("#form_login").hide();
+			$("#form_logout").show();
+			isLogin = true;
+		}
+	
+		//回答者登入失败
+		function login_failed() {
+			$("#form_logout_name").val("");
+			$("#form_login").show();
+			$("#form_logout").hide();
+		}
+		
+		//回答者登出成功
+		function logout_success() {
+			$("#form_login_name").val("");
+			$("#form_login_password").val("");
+			$("#form_logout_name").val("");
+			$("#form_login").show();
+			$("#form_logout").hide();
+			isLogin = false;
+		}
+	
+		//回答者登出失败
+		function logout_failed() {
+			$("#form_login").hide();
+			$("#form_logout").show();
+		}
+		
+		//回答者登入
+		function do_login() {
+			var form_login = document.getElementById('form_login');
+			var formData = new FormData(form_login);
+            
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        var jsonObj = JSON.parse(xhr.responseText);
+						if(jsonObj.ecode == 0) {
+							login_success(jsonObj.name);
+						} else {
+							login_failed();
+							open_info_modal("登入失败："+jsonObj.errorMsg);
+						}
+                    } else if (xhr.status == 404) {
+                        login_failed();
+						open_info_modal("登入失败：网络错误 404");
+                    }
+                }
+            }
+            xhr.open('post', 'answerlogin.php');
+            xhr.send(formData);
+		
+		}
+		
+		//回答者登出
+		function do_logout() {
+			var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        var jsonObj = JSON.parse(xhr.responseText);
+						if(jsonObj.ecode == 0) {
+							logout_success();
+						} else {
+							logout_failed();
+							open_info_modal("登出失败："+jsonObj.errorMsg);
+						}
+                    } else if (xhr.status == 404) {
+                        logout_failed();
+						open_info_modal("登出失败：网络错误 404");
+                    }
+                }
+            }
+            xhr.open('post', 'answerlogout.php');
+            xhr.send();
+		
+		}
+		
+		//返回查询类型
+        function getSearchType() {
+            return currentSearchType;
+        }
+
+		//返回查询关键字
+        function getSearchKeyword() {
+            return $("#keyword").val();
+        }
+
+		//返回查询的每页记录数
+        function getSearchCount() {
+            var select_count = document.getElementById('select_count');
+            var sid = select_count.selectedIndex;
+            var value = select_count[sid].innerHTML;
+            return value;
+        }
+
+		//处理每页记录数的变化
+        function select_count_onchange() {
+            var type = getSearchType();
+            var keyword = getSearchKeyword();
+            var count = getSearchCount();
+
+			var page = curentPage;
+			if(page < 1) {
+				page = 1;
+			}
+            var start = (page - 1) * count;
+
+            do_search(type, keyword, start, count);
+			
+        }
+		
+		//处理查询
+		function do_search(type, keyword, start, count) {
+            debug_log('type:'+type+', keyword:'+keyword+', start:'+start+', count:'+count);
+
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+						var jsonObj = JSON.parse(xhr.responseText);
+						if(jsonObj.ecode == 0) {
+							render_table(jsonObj);
+							update_pagination(jsonObj.start, jsonObj.count, jsonObj.totalcount);
+						} else {
+							open_info_modal("查询失败："+jsonObj.errorMsg);
+						}
+						debug_log(jsonObj);
+						
+                    } else if (xhr.status == 404) {
+						open_info_modal("查询失败：网络错误 404");
+                    }
+                }
+            }
+            xhr.open('get', 'search.php?type='+type+'&keyword=' + keyword + '&start='+start+'&count='+count+'&t=' + Math.random());
+            xhr.send();
+
+        }
+
+		//更新宣热表格
+		function render_table(obj) {
+			var table = document.getElementById("question_table");
+
+			while(table.rows.length > 0) {
+				table.deleteRow(0);
+			}
+
+			for (var i = 0; i < obj.records.length; i++) {	
+				var row = table.insertRow(-1);
+                            
+				var str = "";
+
+				//id
+				var cell = row.insertCell(-1);
+				cell.innerHTML = obj.records[i].id;
+				
+				//question_file_url & question_file_name
+				cell = row.insertCell(-1);
+				str = '<a href="';
+				str += obj.records[i].question_file_url;
+				str += '" download="';
+				str += obj.records[i].question_file_name;
+				str += '">';
+				str += obj.records[i].question_file_name;
+				str += '</a>';
+				cell.innerHTML = str;
+				
+				//question_desc
+				cell = row.insertCell(-1);
+				cell.innerHTML = obj.records[i].question_desc;
+				
+				//answer_file_url & answer_file_name
+				cell = row.insertCell(-1);
+				str = '<a href="';
+				str += obj.records[i].answer_file_url;
+				str += '" download="';
+				str += obj.records[i].answer_file_name;
+				str += '">';
+				str += obj.records[i].answer_file_name;
+				str += '</a>';
+				cell.innerHTML = str;
+				
+				//update_time
+				cell = row.insertCell(-1);
+				cell.innerHTML = obj.records[i].update_time;
+				
+				//answerer
+				cell = row.insertCell(-1);
+				cell.innerHTML = obj.records[i].answerer;
+				
+				//
+				cell = row.insertCell(-1);
+				str = '<button class="btn-xs btn-primary" onClick="table_btn_edit_onClick(';
+				str += obj.records[i].id;
+				str += ')">上传答案</button> '
+				str += '<button class="btn-xs btn-danger" onClick="table_btn_del_onClick(';
+				str += obj.records[i].id;
+				str += ')">删除问题</button>'
+				cell.innerHTML = str;
+				
+			}
+		}
+
+		function table_btn_edit_onClick(id) {
+			if(isLogin) {
+				open_edit_modal(id);
+			} else {
+				open_info_modal("必须登入后才能上传答案");
+			}
+			
+		}
+
+		function table_btn_del_onClick(id) {
+			if(isLogin) {
+				open_del_modal(id);
+			} else {
+				open_info_modal("必须登入后才能删除问题");
+			}
+		}
+
+
+
+		//更新分页
+		function update_pagination(start, count, total) {
+			if(total <= 0) {
+				curentTotalPage = 0;
+				curentPage = 0;
+				$("#pg_root").hide();
+				return;
+			}
+			
+			$("#pg_root").show();
+			
+			var totalPage = Math.ceil(total / count);
+			var page = Math.floor(start / count) + 1;
+			if(page > totalPage) {
+				page = totalPage;
+			}
+			curentTotalPage = totalPage;
+			curentPage = page;
+			
+			
+			if(page <= 1) {
+				$("#pg_li_pre").addClass("disabled");
+				$("#pg_a_pre").removeAttr("onclick");
+			} else {
+				$("#pg_li_pre").removeClass("disabled");
+				$("#pg_a_pre").attr("onclick", "select_pg_pre();");
+			}
+			
+			
+			
+			if(page >= totalPage) {
+				$("#pg_li_next").addClass("disabled");
+				$("#pg_a_next").removeAttr("onclick");
+			} else {
+				$("#pg_li_next").removeClass("disabled");
+				$("#pg_a_next").attr("onclick", "select_pg_next();");
+			}
+			
+			$("#pg_a_3").text(page);
+			$("#pg_li_3").addClass("active");
+			$("#pg_li_3").removeClass("disabled");
+			
+			if(page - 1 >= 1) {
+				$("#pg_a_2").text(page - 1);
+				$("#pg_li_2").show();
+			} else {
+				$("#pg_li_2").hide();
+			}
+			
+			if(page - 2 >= 1) {
+				$("#pg_a_1").text(page - 2);
+				$("#pg_li_1").show();
+			} else {
+				$("#pg_li_1").hide();
+			}
+			
+			if(page + 1 <= totalPage) {
+				$("#pg_a_4").text(page + 1);
+				$("#pg_li_4").show();
+			} else {
+				$("#pg_li_4").hide();
+			}
+			
+			if(page + 2 <= totalPage) {
+				$("#pg_a_5").text(page + 2);
+				$("#pg_li_5").show();
+			} else {
+				$("#pg_li_5").hide();
+			}
+			
+			
+			debug_log("totalPage: "+totalPage);
+			debug_log("page: "+page);
+			
+		}
+		
+		function select_pg_num(pg_a_id) {
+			var page = parseInt($(pg_a_id).text());
+			
+			var type = getSearchType();
+            var keyword = getSearchKeyword();
+            var count = getSearchCount();
+            var start = (page - 1) * count;
+
+            do_search(type, keyword, start, count);
+			
+		}
+		
+		function select_pg_first() {
+			var type = getSearchType();
+            var keyword = getSearchKeyword();
+            var count = getSearchCount();
+            var start = 0;
+
+            do_search(type, keyword, start, count);
+			
+		}
+		
+		function select_pg_pre() {
+			var page = curentPage - 1;
+			if(page < 1) {
+				page = 1;
+			}
+		
+			var type = getSearchType();
+            var keyword = getSearchKeyword();
+            var count = getSearchCount();
+            var start = (page - 1) * count;
+
+            do_search(type, keyword, start, count);
+			
+		}
+		
+		function select_pg_end() {
+			var page = curentTotalPage;
+		
+			var type = getSearchType();
+            var keyword = getSearchKeyword();
+            var count = getSearchCount();
+            var start = (page - 1) * count;
+
+            do_search(type, keyword, start, count);
+			
+		}
+		
+		function select_pg_next() {
+			var page = curentPage + 1;
+			if(page > curentTotalPage) {
+				page = curentTotalPage;
+			}
+		
+			var type = getSearchType();
+            var keyword = getSearchKeyword();
+            var count = getSearchCount();
+            var start = (page - 1) * count;
+
+            do_search(type, keyword, start, count);
+			
+		}
+		
+		
+		
+		
+		
+		//
+		function init() {
+			isLogin = false;
+			currentSearchType = "excel";
+			$("#form_logout_name").val("");
+			update_pagination(0, getSearchCount(), 0);
+			$("#table_root").hide();
+			
+		}
+		
+		function load() {
+			init();
+			check_login();
+			select_pg_first();
+
+        }
+		
+		
+		
+		
+		
+		//
+		function test(str) {
+			
+			//alert($(str).text());
+			
+		}
+	
+	
+	
+
+        
+
+        
+
+    </script>
+
+</body>
+
+</html>
