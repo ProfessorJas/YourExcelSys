@@ -1,0 +1,16 @@
+#content {
+    margin: 25px;
+}
+
+#txtHint {
+    overflow: hidden;
+    color:red;
+    word-wrap: break-word;      /* set "word-wrap" to "break-word" */
+}
+
+.close {
+	background-color: #FF0000;
+}
+
+/* input:focus {    outline: none;    border-color: #999994;    box-shadow: 0 0 5px rgba(207, 220, 0, 0.4);    border-radius: 5px;} */
+/* input:focus {outline: none; box-shadow: none;} */
