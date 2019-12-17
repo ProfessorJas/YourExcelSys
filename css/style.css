@@ -12,5 +12,33 @@
 	background-color: #FF0000;
 }
 
+#pg_all {
+    display: flex;
+    flex-direction: row;
+}
+
+#pg_count {
+    margin-top: 20px;
+    float: left;
+	min-width:100px;
+}
+
+#pg_count_text {
+    margin-top: 25px;
+    margin-left: 10px;
+    float: left;
+	min-width:50%;
+}
+
+#pg_root {
+    float: right;
+    width: calc(100% - 150px);
+}
+
+#pagination_id {
+    float: right;
+}
+
+
 /* input:focus {    outline: none;    border-color: #999994;    box-shadow: 0 0 5px rgba(207, 220, 0, 0.4);    border-radius: 5px;} */
 /* input:focus {outline: none; box-shadow: none;} */

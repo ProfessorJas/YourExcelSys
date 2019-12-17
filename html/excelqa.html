@@ -17,7 +17,6 @@
 	
 
 
-
     
 </head>
 
@@ -58,24 +57,39 @@
 			</div>
 		</nav>
 
+
+
 		<ul class="nav nav-pills" id="search_type_tab">
 		  <li class="active" data-search-type="excel"><a href="javascript:void(0);" onclick="change_search_type(0);">Excel</a></li>
 		  <li data-search-type="vba"><a href="javascript:void(0);" onclick="change_search_type(1);">VBA</a></li>
 		</ul>
 	
 		</br>
-	
+
+		<div class="form-group" id="search_option_group">
+			<label class="radio-inline">
+				<input type="radio" name="search_option" id="search_option_1" value="all" checked onclick="change_search_option();"> 全部
+			</label>
+			<label class="radio-inline">
+				<input type="radio" name="search_option" id="search_option_2"  value="solved" onclick="change_search_option();"> 只看已解决
+			</label>
+			<label class="radio-inline">
+				<input type="radio" name="search_option" id="search_option_3"  value="unsolved" onclick="change_search_option();"> 只看未解决
+			</label>
+		</div>
+
+
 		<div class="form-group">
 			<table class="table table-bordered table-hover">
 				<thead>
 					<tr>
-						<th>问题ID</th>
-						<th>问题文件</th>
-						<th>问题描述</th>
-						<th>答案文件</th>
-						<th>更新时间</th>
-						<th>解决者</th>
-						<th>操作</th>
+						<th class="text-center" bgcolor="fff000">ID</th>
+						<th class="text-center" bgcolor="fff000">问题文件</th>
+						<th class="text-center" bgcolor="fff000">问题描述</th>
+						<th class="text-center" bgcolor="fff000">答案文件</th>
+						<th class="text-center" bgcolor="fff000">更新时间</th>
+						<th class="text-center" bgcolor="fff000">解决者</th>
+						<th class="text-center" bgcolor="fff000">操作</th>
 					</tr>
 				</thead>
 				
@@ -84,24 +98,26 @@
 			</table>
 		</div>
 			
-		<nav class="navbar navbar-light bg-faded">	
-			<div class="form-group pull-left">
+		<nav class="navbar navbar-light bg-faded" id="pg_all">	
+			<div class="form-group pull-left" id="pg_count">
 				<select class="form-control" onchange="select_count_onchange()" id="select_count">
 					<option value="0">10</option>
 					<option value="1">20</option>
 					<option value="2">30</option>
 				</select>
 			</div>
-		
+			
+			<div id="pg_count_text">每页显示10条记录</div>
+			
 			<div class="form-group pull-right" id="pg_root">
-				<ul class="pagination">
+				<ul class="pagination" id="pagination_id">
 					<li id="pg_li_first"><a href="javascript:void(0);" onclick="select_pg_first();" id="pg_a_first">首页</a></li>
 					<li id="pg_li_pre"><a href="javascript:void(0);" id="pg_a_pre">上一页</a></li>
-					<li id="pg_li_1"><a href="javascript:void(0);" onclick="select_pg_num(&quot;#pg_a_1&quot;);" id="pg_a_1">1</a></li>
-					<li id="pg_li_2"><a href="javascript:void(0);" onclick="select_pg_num(&quot;#pg_a_2&quot;);" id="pg_a_2">2</a></li>
+					<li id="pg_li_1"><a href="javascript:void(0);" onclick="select_pg_num('#pg_a_1');" id="pg_a_1">1</a></li>
+					<li id="pg_li_2"><a href="javascript:void(0);" onclick="select_pg_num('#pg_a_2');" id="pg_a_2">2</a></li>
 					<li id="pg_li_3"><a href="javascript:void(0);" id="pg_a_3">3</a></li>
-					<li id="pg_li_4"><a href="javascript:void(0);" onclick="select_pg_num(&quot;#pg_a_4&quot;);" id="pg_a_4">4</a></li>
-					<li id="pg_li_5"><a href="javascript:void(0);" onclick="select_pg_num(&quot;#pg_a_5&quot;);" id="pg_a_5">5</a></li>
+					<li id="pg_li_4"><a href="javascript:void(0);" onclick="select_pg_num('#pg_a_4');" id="pg_a_4">4</a></li>
+					<li id="pg_li_5"><a href="javascript:void(0);" onclick="select_pg_num('#pg_a_5');" id="pg_a_5">5</a></li>
 					<li id="pg_li_next"><a href="javascript:void(0);" id="pg_a_next">下一页</a></li>
 					<li id="pg_li_end"><a href="javascript:void(0);" onclick="select_pg_end();" id="pg_a_end">尾页</a></li>
 				</ul>
@@ -127,7 +143,7 @@
 					<form role="form" id="form_addnew">
 						<div class="form-group">
 							<label for="form_addnew_desc" class="control-label">问题描述:</label>
-							<textarea class="form-control" rows="5" placeholder="输入描述（不超过200字）" name="desc" id="form_addnew_desc"></textarea>
+							<textarea class="form-control" rows="5" placeholder="输入描述（不超过200字）" maxlength="200" name="desc" id="form_addnew_desc"></textarea>
 					   </div>
 
 						<div class="form-group">
@@ -142,7 +158,7 @@
 									</td>
 								</tr>
 							</table>
-							<p class="help-block">* 请上传xlsx文件，多个文件请压缩为zip再上传再上传</p>
+							<p class="help-block">* 请上传xlsx文件，多个文件请压缩为zip再上传。上传文件最大容量为5M</p>
 						</div>
 						<div class="form-group">
 							<label for="form_addnew_email" class="control-label">Email:</label>
@@ -186,7 +202,7 @@
 						<div class="form-group">
 							<label for="form_edit_file">上传文件:</label>
 							<input type="file" class="form-control-file" accept=".xlsx, .zip" name="file" id="form_edit_file"></input>
-							<p class="help-block">* 请上传xlsx文件，多个文件请压缩为zip再上传再上传</p>
+							<p class="help-block">* 请上传xlsx文件，多个文件请压缩为zip再上传。上传文件最大容量为5M</p>
 						</div>
 						
 						<div class="form-check">
@@ -280,6 +296,9 @@
 		var curentPage = 0;
 		var currentSearchType = "excel";
 		var isLogin = false;
+		var searchOption = "all"; 
+		
+		
 		
 	
 		//调试用log
@@ -301,6 +320,18 @@
 			}
 		}
 		
+		//
+		function change_search_option() {
+			var option = $('#search_option_group input:radio:checked').val();
+			if(searchOption != option) {
+				searchOption = option;
+				select_pg_first();
+			}
+		}
+		
+		function getSearchOption() {
+            return searchOption;
+        }
 		
 		//处理标签变化
 		function change_search_type (idx) {
@@ -352,8 +383,9 @@
 		
 		//处理新建问题提交按钮的点击事件
 		function btn_addnew_submit_on_click() {
-			check_addnew();
-			do_addnew();
+			if(check_addnew()) {
+				do_addnew();
+			}
         }
 	
 		//弹出回答问题对话框
@@ -379,8 +411,9 @@
 		
 		//处理回答问题提交按钮的点击事件
 		function btn_edit_submit_on_click() {
-			check_edit();
-			do_edit();
+			if(check_edit()) {
+				do_edit();
+			}
         }
 		
 	
@@ -410,14 +443,46 @@
 		
 		//提交新建问题前的数据检查
 		function check_addnew() {
+			$("#form_addnew_hint").text("");
+		
+			var str = $("#form_addnew_desc").val();
+			if (str == null || str == "") {
+				$("#form_addnew_hint").text("提交失败: 问题描述不能为空");
+					return false;
+			}
 			
+			str = $("#form_addnew_email").val();
+			if (str != null && str != "") {
+				var pattern = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+				if(!pattern.test(str)) {
+					$("#form_addnew_hint").text("提交失败: Email格式错误");
+					return false;
+				}
+			}
 			
+			str = $("#form_addnew_phone").val();
+			if (str != null && str != "") {
+				var pattern = /^1\d{10}$/;
+				if(!pattern.test(str)) {
+					$("#form_addnew_hint").text("提交失败: 电话号码格式错误");
+					return false;
+				}
+			}
 			
+			str = document.getElementById('form_addnew_file').value;
+			if (str != null && str != "") {
+				var pattern = /(.[.]xlsx)$|(.[.]zip)$/;
+				if(!pattern.test(str)) {
+					$("#form_addnew_hint").text("提交失败: 只支持xlsx,zip格式文件");
+					return false;
+				}
+			}
+			
+			return true;
 		}
 		
 		//提交新建问题
 		function do_addnew() {
-			
 			$("#btn_addnew_submit").attr("disabled", true);
 		
 			var form_addnew = document.getElementById('form_addnew');
@@ -434,7 +499,7 @@
 
 					} else if (xhr.status == 404) {
 						$("#btn_addnew_submit").attr("disabled", false);
-						$("#form_addnew_hint").text("提交失败: 网络错误 404。");
+						$("#form_addnew_hint").text("提交失败: 网络错误 404");
 					}
 				}
 			}
@@ -453,14 +518,27 @@
 				$("#addnew_modal").modal('hide');
 				select_pg_first();
 			}
+			
 		}
 	
 	
 		//提交回答问题前的数据检查
 		function check_edit() {
+			$("#form_edit_hint").text("");
+		
+			str = document.getElementById('form_edit_file').value;
+			if (str == null || str == "") {
+				$("#form_edit_hint").text("提交失败: 必须选择上传文件");
+				return false;
+			}
 			
-			
-			
+			var pattern = /(.[.]xlsx)$|(.[.]zip)$/;
+			if(!pattern.test(str)) {
+				$("#form_edit_hint").text("提交失败: 只支持xlsx,zip格式文件");
+				return false;
+			}
+
+			return true;
 		}
 		
 		//提交回答问题
@@ -490,7 +568,7 @@
 
 					} else if (xhr.status == 404) {
 						$("#btn_edit_submit").attr("disabled", false);
-						$("#form_edit_hint").text("提交失败: 网络错误 404。");
+						$("#form_edit_hint").text("提交失败: 网络错误 404");
 					}
 				}
 			}
@@ -531,7 +609,7 @@
 
 					} else if (xhr.status == 404) {
 						$("#btn_del_submit").attr("disabled", false);
-						$("#form_del_hint").text("删除失败: 网络错误 404。");
+						$("#form_del_hint").text("删除失败: 网络错误 404");
 					}
 				}
 			}
@@ -681,20 +759,23 @@
             var type = getSearchType();
             var keyword = getSearchKeyword();
             var count = getSearchCount();
+			var option = getSearchOption();
 
+			$("#pg_count_text").text("每页显示"+count+"条记录");
+			
 			var page = curentPage;
 			if(page < 1) {
 				page = 1;
 			}
             var start = (page - 1) * count;
 
-            do_search(type, keyword, start, count);
+            do_search(type, keyword, start, count, option);
 			
         }
 		
 		//处理查询
-		function do_search(type, keyword, start, count) {
-            debug_log('type:'+type+', keyword:'+keyword+', start:'+start+', count:'+count);
+		function do_search(type, keyword, start, count, option) {
+            debug_log('type:'+type+', keyword:'+keyword+', start:'+start+', count:'+count+', option:'+option);
 
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
@@ -714,12 +795,12 @@
                     }
                 }
             }
-            xhr.open('get', 'search.php?type='+type+'&keyword=' + keyword + '&start='+start+'&count='+count+'&t=' + Math.random());
+            xhr.open('get', 'search.php?type='+type+'&keyword=' + keyword + '&start='+start+'&count='+count+'&option='+option+'&t=' + Math.random());
             xhr.send();
 
         }
 
-		//更新宣热表格
+		//更新渲染表格
 		function render_table(obj) {
 			var table = document.getElementById("question_table");
 
@@ -735,6 +816,7 @@
 				//id
 				var cell = row.insertCell(-1);
 				cell.innerHTML = obj.records[i].id;
+				cell.className = "text-center";
 				
 				//question_file_url & question_file_name
 				cell = row.insertCell(-1);
@@ -746,10 +828,19 @@
 				str += obj.records[i].question_file_name;
 				str += '</a>';
 				cell.innerHTML = str;
+				cell.className = "text-center";
 				
 				//question_desc
 				cell = row.insertCell(-1);
-				cell.innerHTML = obj.records[i].question_desc;
+				str = obj.records[i].question_desc;
+				if(str.length > 20) {
+					str = str.substr(0,20) + "...";
+					cell.innerHTML = str;
+					cell.title = obj.records[i].question_desc;
+				} else {
+					cell.innerHTML = str;
+				}
+				cell.className = "text-center";
 				
 				//answer_file_url & answer_file_name
 				cell = row.insertCell(-1);
@@ -761,14 +852,17 @@
 				str += obj.records[i].answer_file_name;
 				str += '</a>';
 				cell.innerHTML = str;
+				cell.className = "text-center";
 				
 				//update_time
 				cell = row.insertCell(-1);
 				cell.innerHTML = obj.records[i].update_time;
+				cell.className = "text-center";
 				
 				//answerer
 				cell = row.insertCell(-1);
 				cell.innerHTML = obj.records[i].answerer;
+				cell.className = "text-center";
 				
 				//
 				cell = row.insertCell(-1);
@@ -779,6 +873,7 @@
 				str += obj.records[i].id;
 				str += ')">删除问题</button>'
 				cell.innerHTML = str;
+				cell.className = "text-center";
 				
 			}
 		}
@@ -885,8 +980,9 @@
             var keyword = getSearchKeyword();
             var count = getSearchCount();
             var start = (page - 1) * count;
-
-            do_search(type, keyword, start, count);
+			var option = getSearchOption();
+			
+            do_search(type, keyword, start, count, option);
 			
 		}
 		
@@ -895,8 +991,9 @@
             var keyword = getSearchKeyword();
             var count = getSearchCount();
             var start = 0;
-
-            do_search(type, keyword, start, count);
+			var option = getSearchOption();
+			
+            do_search(type, keyword, start, count, option);
 			
 		}
 		
@@ -910,8 +1007,9 @@
             var keyword = getSearchKeyword();
             var count = getSearchCount();
             var start = (page - 1) * count;
-
-            do_search(type, keyword, start, count);
+			var option = getSearchOption();
+			
+            do_search(type, keyword, start, count, option);
 			
 		}
 		
@@ -922,8 +1020,9 @@
             var keyword = getSearchKeyword();
             var count = getSearchCount();
             var start = (page - 1) * count;
+			var option = getSearchOption();
 
-            do_search(type, keyword, start, count);
+            do_search(type, keyword, start, count, option);
 			
 		}
 		
@@ -937,8 +1036,9 @@
             var keyword = getSearchKeyword();
             var count = getSearchCount();
             var start = (page - 1) * count;
-
-            do_search(type, keyword, start, count);
+			var option = getSearchOption();
+			
+            do_search(type, keyword, start, count, option);
 			
 		}
 		
@@ -952,7 +1052,7 @@
 			currentSearchType = "excel";
 			$("#form_logout_name").val("");
 			update_pagination(0, getSearchCount(), 0);
-			$("#table_root").hide();
+			searchOption = $('#search_option_group input:radio:checked').val();
 			
 		}
 		

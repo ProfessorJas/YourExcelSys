@@ -23,7 +23,7 @@
 		}
 	}
 
-	function GetData($keyword, $start, $count, $type) {
+	function GetData($keyword, $start, $count, $type, $option) {
 		$keyword = mysql_entities_fix_string($keyword);
 		$start = mysql_entities_fix_string($start);
 		$count = mysql_entities_fix_string($count);
@@ -38,14 +38,22 @@
 
 		$conn_mysqli->set_charset("utf8");
 
-		if($keyword == "") {
-			$where = "";
+		if($keyword === "") {
+			$keyword_where = "";
 		} else {
-			$where = "AND (id='$keyword' OR question_file_name LIKE '%$keyword%' OR question_desc LIKE '%$keyword%')";
+			$keyword_where = "AND (id='$keyword' OR question_file_name LIKE '%$keyword%' OR question_desc LIKE '%$keyword%')";
+		}
+		
+		if($option === "solved") {
+			$option_where = "AND answer_file_name<>''";
+		} elseif($option === "unsolved") {
+			$option_where = "AND answer_file_name=''";
+		} else {
+			$option_where = "";
 		}
 		
 		//get record count
-		$query = "SELECT COUNT(*) AS count FROM question WHERE question_type='$type' $where";
+		$query = "SELECT COUNT(*) AS count FROM question WHERE question_type='$type' $keyword_where $option_where";
 		$result = $conn_mysqli->query($query);
 		if(!$result) {
 			$returnObj = new ResultObject(-1, '获得记录总数出错, ' . $conn_mysqli->error);
@@ -68,7 +76,7 @@
 		
 		
 		//get record info
-		$query = "SELECT * FROM question WHERE question_type='$type' $where ORDER BY update_time DESC LIMIT $start, $count";
+		$query = "SELECT * FROM question WHERE question_type='$type' $keyword_where $option_where ORDER BY update_time DESC LIMIT $start, $count";
 		//print_r($query);
 		//exit();
 		
@@ -144,7 +152,12 @@
 		}
 	}
 	
-	echo GetData($keyword, $start, $count, $type);
+	$option = "all";
+	if (isset($_GET['option'])) {
+		$option = $_GET['option'];
+	}
+	
+	echo GetData($keyword, $start, $count, $type, $option);
 	
 	
 
