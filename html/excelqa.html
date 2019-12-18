@@ -7,6 +7,8 @@
 
     <title>Your Excel System</title>
 
+<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.css">  
+
 	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">  
 	<link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
 	<link rel="stylesheet" href="css/style.css">
@@ -83,13 +85,13 @@
 			<table class="table table-bordered table-hover">
 				<thead>
 					<tr>
-						<th class="text-center" bgcolor="fff000">ID</th>
-						<th class="text-center" bgcolor="fff000">问题文件</th>
-						<th class="text-center" bgcolor="fff000">问题描述</th>
-						<th class="text-center" bgcolor="fff000">答案文件</th>
-						<th class="text-center" bgcolor="fff000">更新时间</th>
-						<th class="text-center" bgcolor="fff000">解决者</th>
-						<th class="text-center" bgcolor="fff000">操作</th>
+						<th class="text-center" bgcolor="5cb85c">ID</th>
+						<th class="text-center" bgcolor="5cb85c">问题文件</th>
+						<th class="text-center" bgcolor="5cb85c">问题描述</th>
+						<th class="text-center" bgcolor="5cb85c">答案文件</th>
+						<th class="text-center" bgcolor="5cb85c">更新时间</th>
+						<th class="text-center" bgcolor="5cb85c">解决者</th>
+						<th class="text-center" bgcolor="5cb85c">操作</th>
 					</tr>
 				</thead>
 				
@@ -122,7 +124,6 @@
 					<li id="pg_li_end"><a href="javascript:void(0);" onclick="select_pg_end();" id="pg_a_end">尾页</a></li>
 				</ul>
 			</div>
-
 		
 		</nav>	
 
@@ -378,6 +379,9 @@
 			$("#btn_addnew_submit").attr("disabled",false);
 			$("#form_addnew_hint").text("");
 			$("#form_addnew_file").val("");
+			$("#form_addnew_desc").val("");
+			$("#form_addnew_email").val("");
+			$("#form_addnew_phone").val("");
 			$("#addnew_modal").modal('show');
 		}
 		
@@ -563,6 +567,7 @@
 			xhr.onreadystatechange = function () {
 				if (xhr.readyState == 4) {
 					if (xhr.status == 200) {
+						debug_log(xhr.responseText);
 						var jsonObj = JSON.parse(xhr.responseText);
 						edit_complete(jsonObj);
 

@@ -3,15 +3,85 @@
 	include_once 'config.php';
 	include_once 'common.php';
 
+	require_once("phpmailer/Phpmailer.php");
+	require_once("phpmailer/class.smtp.php");
+
+	
+	function SendMail($address, $body) {
+		// 实例化PHPMailer核心类
+		$mail = new PHPMailer();
+		
+		// 是否启用smtp的debug进行调试 开发环境建议开启 生产环境注释掉即可 默认关闭debug调试模式
+		$mail->SMTPDebug = 1;
+		
+		// 使用smtp鉴权方式发送邮件
+		$mail->isSMTP();
+		
+		// smtp需要鉴权 这个必须是true
+		$mail->SMTPAuth = true;
+		
+		// 链接qq域名邮箱的服务器地址
+		$mail->Host = 'Shmail.hylinkad.com';
+		
+		// 设置使用ssl加密方式登录鉴权
+		//$mail->SMTPSecure = 'ssl';
+		
+		// 设置ssl连接smtp服务器的远程服务器端口号
+		$mail->Port = 25;
+		
+		// 设置发送的邮件的编码
+		$mail->CharSet = 'UTF-8';
+		
+		// 设置发件人昵称 显示在收件人邮件的发件人邮箱地址前的发件人姓名
+		$mail->FromName = 'Your Excel System';
+		
+		// smtp登录的账号 QQ邮箱即可
+		$mail->Username = 'yes@pagechoice.com';
+		
+		// smtp登录的密码 使用生成的授权码
+		$mail->Password = 'hy888888';
+		
+		// 设置发件人邮箱地址 同登录账号
+		$mail->From = 'yes@pagechoice.com';
+		
+		// 邮件正文是否为html编码 注意此处是一个方法
+		$mail->isHTML(true);
+		
+		// 设置收件人邮箱地址
+		$mail->addAddress($address);
+		
+		// 添加该邮件的主题
+		$mail->Subject = '问题更新通知';
+		
+		// 添加邮件正文
+		$mail->Body = $body;
+		
+		// 为该邮件添加附件
+		//$mail->addAttachment('./example.pdf');
+		
+		// 发送邮件 返回状态
+		$status = $mail->send();
+
+		if(!$status) {
+			return "[send to $address] error: " . $mail->ErrorInfo;
+		}
+		
+		return "[send to $address] ok";
+		
+	}
+
+	
 	class ResultObject {
 		public $ecode;
 		public $errorMsg;
 		public $timestamp;
+		public $sendmailinfo;
 
 		function __construct($ecode = 0, $errorMsg = "") {
 			$this->ecode = $ecode;
 			$this->errorMsg = $errorMsg;
 			$this->timestamp = date('Y-m-d H:i:s',time());
+			$this->sendmailinfo = "";
 		}
 	}
 
@@ -32,7 +102,7 @@
 		$conn_mysqli->set_charset("utf8");
 
 		//get record info
-		$query = "SELECT answer_file_url FROM question WHERE id=$id";
+		$query = "SELECT * FROM question WHERE id=$id";
 		//print_r($query);
 		//exit();
 		
@@ -55,6 +125,13 @@
 		
 		$old_answer_file_url = $row["answer_file_url"];
 		
+		$question_desc = $row["question_desc"];
+		$question_file_name = $row["question_file_name"];
+		$question_file_url = $row["question_file_url"];
+		$questioner_email = $row["questioner_email"];	
+		$questioner_phone = $row["questioner_phone"];
+		
+			
 		//update record info
 		$query = "UPDATE question SET answer_file_name='$filename', answer_file_url='$fileurl', answerer='$answerer', update_time=NOW() WHERE id=$id";
 		//print_r($query);
@@ -75,16 +152,36 @@
 			unlink($old_answer_file_url);
 		}
 		
-		
 		//
-		if($notify === "email") {
+		$sendMailInfo = "";
+		if($notify === "email" || $notify === "all") {
+			$mailbody = '<h2>您在Your Excel System提交的问题已被更新</h2>';
+			$mailbody .= '问题ID: ' . $id . '<br/><br/>';
+			$mailbody .= '问题描述: ' . $question_desc . '<br/><br/>';
+			$mailbody .= '解决者: ' . $answerer . '<br/><br/>';
+			if($question_file_url === "") {
+				$mailbody .= '问题文件：无<br/><br/>';
+			} else {
+				$mailbody .= '问题文件：<a href="' . $_SERVER['HTTP_HOST'] . $question_file_url . '" download="' . $question_file_name . '">下载</a><br/><br/>';
+			}
+			$mailbody .= '答案文件：<a href="' . $_SERVER['HTTP_HOST'] . $fileurl . '" download="' . $filename . '">下载</a><br/><br/>';
 			
-		} elseif ($notify === "phone") {
+			if($questioner_email != "") {
+				$sendMailInfo = SendMail($questioner_email, $mailbody);
+			}
+			
+			//print_r($mailbody);
+		}
+
+		if ($notify === "phone" || $notify === "all") {
 			
 		}
 
+
+
 		//
 		$returnObj = new ResultObject();
+		$returnObj->sendmailinfo = $sendMailInfo;
 		return $returnObj;
 		
 	}
