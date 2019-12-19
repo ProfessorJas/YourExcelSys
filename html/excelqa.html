@@ -838,14 +838,30 @@
 				//question_desc
 				cell = row.insertCell(-1);
 				str = obj.records[i].question_desc;
-				if(str.length > 20) {
-					str = str.substr(0,20) + "...";
-					cell.innerHTML = str;
+				str = str.replace(/^((\s|&nbsp;)*\r?\n)+/g, ''); //清除开头换行
+				str = str.replace(/((\s|&nbsp;)*\r?\n)+$/g, ''); //清除结尾换行
+				var idx = obj.records[i].question_desc.indexOf("\r");
+				if(idx < 0) {
+					idx = obj.records[i].question_desc.indexOf("\n");
+				}
+				if(idx > 0) {
+					str = str.substring(0, idx);
+					if(str.length > 20) {
+						str = str.substr(0, 20);
+					}
+					cell.innerHTML = str + "...";
 					cell.title = obj.records[i].question_desc;
 				} else {
-					cell.innerHTML = str;
+					if(str.length > 20) {
+						str = str.substr(0, 20) + "...";
+						cell.innerHTML = str;
+						cell.title = obj.records[i].question_desc;
+					} else {
+						cell.innerHTML = str;
+					}
 				}
 				cell.className = "text-center";
+				
 				
 				//answer_file_url & answer_file_name
 				cell = row.insertCell(-1);

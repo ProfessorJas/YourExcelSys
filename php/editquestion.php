@@ -156,15 +156,15 @@
 		$sendMailInfo = "";
 		if($notify === "email" || $notify === "all") {
 			$mailbody = '<h2>您在Your Excel System提交的问题已被更新</h2>';
-			$mailbody .= '问题ID: ' . $id . '<br/><br/>';
-			$mailbody .= '问题描述: ' . $question_desc . '<br/><br/>';
-			$mailbody .= '解决者: ' . $answerer . '<br/><br/>';
+			$mailbody .= '<b>问题ID:</b> ' . $id . '<br/>';
+			$mailbody .= '<b>解决者:</b> ' . $answerer . '<br/><br/>';
+			$mailbody .= '<b>问题描述:</b> <br/><pre><code>' . $question_desc . '</code></pre><br/><br/>';
 			if($question_file_url === "") {
-				$mailbody .= '问题文件：无<br/><br/>';
+				$mailbody .= '<b>问题文件:</b> 无<br/><br/>';
 			} else {
-				$mailbody .= '问题文件：<a href="' . $_SERVER['HTTP_HOST'] . $question_file_url . '" download="' . $question_file_name . '">下载</a><br/><br/>';
+				$mailbody .= '<b>问题文件:</b> <a href="' . $_SERVER['HTTP_HOST'] . $question_file_url . '" download="' . $question_file_name . '">下载</a><br/><br/>';
 			}
-			$mailbody .= '答案文件：<a href="' . $_SERVER['HTTP_HOST'] . $fileurl . '" download="' . $filename . '">下载</a><br/><br/>';
+			$mailbody .= '<b>答案文件:</b> <a href="' . $_SERVER['HTTP_HOST'] . $fileurl . '" download="' . $filename . '">下载</a><br/><br/>';
 			
 			if($questioner_email != "") {
 				$sendMailInfo = SendMail($questioner_email, $mailbody);
