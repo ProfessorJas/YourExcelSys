@@ -40,5 +40,6 @@
 }
 
 
+table thead th { color: white; font-size:14px; background-color: #217346; }
 /* input:focus {    outline: none;    border-color: #999994;    box-shadow: 0 0 5px rgba(207, 220, 0, 0.4);    border-radius: 5px;} */
 /* input:focus {outline: none; box-shadow: none;} */
