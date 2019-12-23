@@ -17,41 +17,62 @@
 	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	
+	<style>
+		.table {
+			border:solid 1px #fff;
+		}
+		
+		.label_tag {
+			color: #555555;
+		}
 
+		.active a {
+			background-color:#217346 !important;
+		}
 
+		.form-group {
+ 			 margin-bottom: 10px;
+		}
+		
+	</style>
     
 </head>
 
 <body onload="load();">
 
-    <div id="content">
-	
-		<nav class="navbar navbar-light bg-faded">
+    <div id="content" style="margin-bottom: 5px;margin-top: 5px;">
+		
+
+		<nav class="nav navbar-light bg-faded">
+			<div class="form-group pull-left" style="margin-bottom: 0px;">
+				<Span><img src="yes.png" alt="YES"></Span>
+			</div>
+
 			<div class="form-group pull-right">
 				<form class="form-inline"  style="display:none" id="form_login">
-					<label for="form_login_name">用户名:</label>
-					<input type="text" class="form-control input-sm" placeholder="用户名" name="name" id="form_login_name">
-					<label for="form_login_password">密码</label>
-					<input type="text" class="form-control input-sm" placeholder="密码" name="password" id="form_login_password">
-					<button type="button" class="btn btn-default btn-sm" onclick="do_login()">登入</button>
+					<label for="form_login_name" class="label_tag" style="font-size: 14px;">用户名:</label>
+					<input type="text" class="form-control" placeholder="用户名" name="name" id="form_login_name" style="line-height: 14px; font-size: 12px;">
+					<label for="form_login_password" class="label_tag" style="font-size: 14px;">密码</label>
+					<input type="text" class="form-control" placeholder="密码" name="password" id="form_login_password" style="line-height: 14px; font-size: 12px;">
+					<button type="button" class="btn btn-default btn-sm" onclick="do_login()" style="border-radius:0.3rem; font-size: 14px;">登入</button>
 				</form>
 			</div>
 			
 			<div class="form-group pull-right">
 				<form class="form-inline"  style="display:none" id="form_logout">
-					<label for="form_logout_name">用户名:</label>
+					<label for="form_logout_name" style="font-size: 14px;">用户名:</label>
 					<input type="text" class="form-control input-sm" readonly name="name" id="form_logout_name">
-					<button type="button" class="btn btn-default btn-sm" onclick="do_logout()">登出</button>
+					<button type="button" class="btn btn-default btn-sm" onclick="do_logout()" style="border-radius:0.3rem; font-size: 14px;">登出</button>
 				</form>
 			</div>
 		</nav>
 	
-		<nav class="navbar navbar-light bg-faded">
+		<nav class="nav navbar-light bg-faded">
 			<div class="form-group">
 				<form class="form-inline">
-					<input type="text" class="form-control" placeholder="编号/文件名/问题描述" name="keyword" id="keyword">
-					<button type="button" class="btn btn-primary" onclick="select_pg_first()">查询</button>
-					<button type="button" class="btn btn-success" onclick="open_addnew_modal()"><span class="glyphicon glyphicon-plus">添加问题</button>
+					<input type="text" class="form-control" placeholder="编号/文件名/问题描述" name="keyword" id="keyword" style="line-height: 36px; font-size: 14px;">
+					<button type="button" class="btn btn-primary" onclick="select_pg_first()" style="border-radius:0.3rem; font-size: 14px;">查询</button>
+					<button type="button" class="btn btn-success" onclick="open_addnew_modal()"  style="border-radius:0.3rem; background-color: #217346; font-size: 14px;"><span class="glyphicon glyphicon-plus">添加问题</button>
 					
 					<!-- <button type="button" class="btn btn-primary" onclick="test()">test</button> -->
 					
@@ -61,13 +82,11 @@
 
 
 
-		<ul class="nav nav-pills" id="search_type_tab">
-		  <li class="active" data-search-type="excel"><a href="javascript:void(0);" onclick="change_search_type(0);">Excel</a></li>
-		  <li data-search-type="vba"><a href="javascript:void(0);" onclick="change_search_type(1);">VBA</a></li>
+		<ul class="nav nav-pills" id="search_type_tab" style="margin-bottom: 10px;">
+		  <li class="active" data-search-type="excel"><a href="javascript:void(0);" onclick="change_search_type(0);" style="border-radius:0.3rem; font-size: 14px; padding: 8px;">Excel</a></li>
+		  <li data-search-type="vba"><a href="javascript:void(0);" onclick="change_search_type(1);" style="border-radius:0.3rem; font-size: 14px; padding: 8px;">VBA</a></li>
 		</ul>
 	
-		</br>
-
 		<div class="form-group" id="search_option_group">
 			<label class="radio-inline">
 				<input type="radio" name="search_option" id="search_option_1" value="all" checked onclick="change_search_option();"> 全部
@@ -79,19 +98,20 @@
 				<input type="radio" name="search_option" id="search_option_3"  value="unsolved" onclick="change_search_option();"> 只看未解决
 			</label>
 		</div>
-
+	
 
 		<div class="form-group">
 			<table class="table table-bordered table-hover">
+			<!-- <table class="table table-hover"> -->
 				<thead>
 					<tr>
-						<th class="text-center" bgcolor="5cb85c">ID</th>
-						<th class="text-center" bgcolor="5cb85c">问题文件</th>
-						<th class="text-center" bgcolor="5cb85c">问题描述</th>
-						<th class="text-center" bgcolor="5cb85c">答案文件</th>
-						<th class="text-center" bgcolor="5cb85c">更新时间</th>
-						<th class="text-center" bgcolor="5cb85c">解决者</th>
-						<th class="text-center" bgcolor="5cb85c">操作</th>
+						<th class="text-center" bgcolor="#217346" style="font-size: 14px;">ID</th>
+						<th class="text-center" bgcolor="#217346" style="font-size: 14px;">问题文件</th>
+						<th class="text-center" bgcolor="#217346" style="font-size: 14px;">问题描述</th>
+						<th class="text-center" bgcolor="#217346" style="font-size: 14px;">答案文件</th>
+						<th class="text-center" bgcolor="#217346" style="font-size: 14px;">更新时间</th>
+						<th class="text-center" bgcolor="#217346" style="font-size: 14px;">解决者</th>
+						<th class="text-center" bgcolor="#217346" style="font-size: 14px;">操作</th>
 					</tr>
 				</thead>
 				
@@ -135,13 +155,17 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 			
-				<div class="modal-header" style="background-color:#c0c0ff;">
+				<div class="modal-header"  style="background-color:#337ab7; color: #fff;">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true" >x</button>
 					<h4 class="modal-title" id="addnew_modal_label">新建问题</h4>
 				</div>
 				
 				<div class="modal-body">
-					<form role="form" id="form_addnew">
+					<form role="form" id="form_addnew" >
+						<div class="form-group">
+							<span class="help-block alert-danger" style="font-size:16px; font-weight: bold;">* 请勿上传敏感数据信息！</span>
+						
+						</div>
 						<div class="form-group">
 							<label for="form_addnew_desc" class="control-label">问题描述:</label>
 							<textarea class="form-control" rows="5" placeholder="输入描述（不超过200字）" maxlength="200" name="desc" id="form_addnew_desc"></textarea>
@@ -188,13 +212,17 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 			
-				<div class="modal-header" style="background-color:#c0c0ff;">
+				<div class="modal-header" style="background-color:#337ab7; color: #fff;">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true" >x</button>
 					<h4 class="modal-title" id="edit_modal_label">上传问题答案</h4>
 				</div>
 				
 				<div class="modal-body">
 					<form role="form" id="form_edit">
+						<div class="form-group">
+							<span class="help-block alert-danger" style="font-size:16px; font-weight: bold;">* 请勿上传敏感数据信息！</span>
+						
+						</div>
 						<div class="form-group">
 							<label for="form_edit_id" class="control-label" id="form_edit_id_label">问题ID:</label>
 							<input type="text" class="form-control" readonly name="id" id="form_edit_id"></input>
@@ -887,10 +915,10 @@
 				
 				//
 				cell = row.insertCell(-1);
-				str = '<button class="btn-xs btn-primary" onClick="table_btn_edit_onClick(';
+				str = '<button class="btn btn-xs btn-primary" onClick="table_btn_edit_onClick(';
 				str += obj.records[i].id;
 				str += ')">上传答案</button> '
-				str += '<button class="btn-xs btn-danger" onClick="table_btn_del_onClick(';
+				str += '<button class="btn btn-xs btn-danger" onClick="table_btn_del_onClick(';
 				str += obj.records[i].id;
 				str += ')">删除问题</button>'
 				cell.innerHTML = str;
@@ -1104,6 +1132,7 @@
 
     </script>
 
+	<footer></footer>
 </body>
 
 </html>
