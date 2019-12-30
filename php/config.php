@@ -13,7 +13,7 @@
 		public static $file_allow_ext = array('jpeg', 'jpg', 'txt', 'png', 'bmp', 'zip', 'rar', 'xlsx');
 		public static $file_max_size = 5242880;
 		
-		public static $gm_code_list = array('tone.tang@pagechoice.com');
+		public static $gm_code_list = array('5c1e427687b724cc');
 		
 		
 		

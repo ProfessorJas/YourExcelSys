@@ -61,7 +61,7 @@
 		$name = "";
 	}
 	if($name == "") {
-		$returnObj = new ResultObject(-1, '名字不能为空');
+		$returnObj = new ResultObject(-1, '用户名不能为空');
 		echo json_encode($returnObj, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES);
 		exit();
 	}

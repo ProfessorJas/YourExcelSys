@@ -15,7 +15,7 @@
 		}
 	}
 
-	function AddQestion($desc, $type, $filename, $fileurl, $email, $phone) {
+	function AddQestion($desc, $type, $filename, $fileurl, $email, $phone, $ip) {
 		$desc = mysql_entities_fix_string($desc);
 		$type = mysql_entities_fix_string($type);
 		$filename = mysql_entities_fix_string($filename);
@@ -34,7 +34,7 @@
 		$conn_mysqli->set_charset("utf8");
 
 		//insert record
-		$query = "INSERT INTO question (question_desc, question_type, question_file_name, question_file_url, questioner_email, questioner_phone, update_time, answerer, answer_file_name, answer_file_url) VALUES ('$desc', '$type', '$filename', '$fileurl', '$email', '$phone', NOW(), '', '', '')";
+		$query = "INSERT INTO question (question_desc, question_type, question_file_name, question_file_url, questioner_email, questioner_phone, update_time, answerer, answer_file_name, answer_file_url, create_time, create_ip) VALUES ('$desc', '$type', '$filename', '$fileurl', '$email', '$phone', NOW(), '', '', '', NOW(), '$ip')";
 		$result = $conn_mysqli->query($query);
 		if(!$result) {
 			$returnObj = new ResultObject(-1, '插入数据出错, ' . $conn_mysqli->error);
@@ -50,7 +50,21 @@
 		
 	}
 	
-	
+	function GetIP() {
+		if (getenv('HTTP_CLIENT_IP') && strcasecmp(getenv('HTTP_CLIENT_IP'), 'unknown')) {
+			$ip = getenv('HTTP_CLIENT_IP');
+		} else if (getenv('HTTP_X_FORWARDED_FOR') && strcasecmp(getenv('HTTP_X_FORWARDED_FOR'), 'unknown')) {
+			$ip = getenv('HTTP_X_FORWARDED_FOR');
+		} else if (getenv('REMOTE_ADDR') && strcasecmp(getenv('REMOTE_ADDR'), 'unknown')) {
+			$ip = getenv('REMOTE_ADDR');
+		} else if (isset($_SERVER['REMOTE_ADDR']) && $_SERVER['REMOTE_ADDR'] && strcasecmp($_SERVER['REMOTE_ADDR'], 'unknown')) {
+			$ip = $_SERVER['REMOTE_ADDR'];
+		}
+		$res =  preg_match ( '/[\d\.]{7,15}/', $ip, $matches ) ? $matches [0] : '';
+		return $res;
+	}
+
+
 	//print_r($_POST);
 	//print_r($_FILES);
 	//exit();
@@ -136,7 +150,9 @@
 		
 	}
 	
-	$returnObj = AddQestion($desc, $type, $filename, $fileurl, $email, $phone);
+	$ip = GetIP();
+
+	$returnObj = AddQestion($desc, $type, $filename, $fileurl, $email, $phone, $ip);
 	echo json_encode($returnObj, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES);
 	 
 	if($returnObj->ecode != 0) {

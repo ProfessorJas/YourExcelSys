@@ -15,20 +15,21 @@
 
         <style>
             #content {
-                margin-top: 55px;
+                margin-top: 30px;
             }
         </style>
     </head>
     <body>
         <div id="content" align="center">
             <div class="col-lg-4">
-                GM码: <input type="text" class="form-control"  name="code" id="code"><br/>
-                名字: <input type="text" class="form-control" name="name" id="username"><br/>
-                密码: <input type="text" class="form-control" name="password" id="password"><br> <br>
+				<p align="left">新增回答者: </p>
+                管理员密码: <input type="text" class="form-control"  name="code" id="code"><br/>
+                回答者用户名: <input type="text" class="form-control" name="name" id="username"><br/>
+                回答者密码: <input type="text" class="form-control" name="password" id="password"><br> <br>
                 <button class="btn btn-primary" style="width: 152px;" id="btn_add" type="button">新增</button><br/>
                 
-                <!-- <p>提示信息: </p><br/>
-                <p><span id="txtHint"></span></p><br/>  -->
+                <br/><p align="left">返回信息: </p>
+                <p align="left" id="txtHint"></p>
             </div>
 
         </div>
@@ -46,7 +47,11 @@
 
     var hint = document.getElementById('txtHint');
 
+	
+
     btn_add.onclick = function () {
+		hint.innerHTML = "";
+		
         var formData = new FormData();
         formData.append('code', code.value);
         formData.append('name', username.value);
@@ -56,14 +61,14 @@
         xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
                 if (xhr.status == 200) {
-                    hint.innerHTML = xhr.responseText;
-                
-                    // console.log(xhr.responseText)
-                    // 将其转化为js对象
-                    //obj = JSON.parse(xhr.responseText)
-                    
+                    var jsonObj = JSON.parse(xhr.responseText);
+					if(jsonObj.ecode == 0) {
+						hint.innerHTML = "新增成功, 新增回答者: "+username.value;
+					} else {
+						hint.innerHTML = "新增失败："+jsonObj.errorMsg;
+					}
                 } else if (xhr.status == 404) {
-                    hint.innerHTML = "没有发现文件、查询或URl";
+                    hint.innerHTML = "新增失败：网络错误 404";
                 }
             }
         }
@@ -71,3 +76,4 @@
         xhr.send(formData);
     }
 </script>
+
