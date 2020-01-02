@@ -15,11 +15,15 @@
 		
 		public static $gm_code_list = array('5c1e427687b724cc');
 		
+		public static $answer_mail_list = array('red.yu@pagechoice.com', 'zhao.runru@pagechoice.com', 'yuan.fen@pagechoice.com');
+		 
 		
 		
 	}
 	
 
 	
+
+
 
 ?>

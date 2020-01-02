@@ -3,15 +3,88 @@
 	include_once 'config.php';
 	include_once 'common.php';
 
+	require_once("phpmailer/Phpmailer.php");
+	require_once("phpmailer/class.smtp.php");
+
+	
+	function SendMail($address_list, $body) {
+		// 实例化PHPMailer核心类
+		$mail = new PHPMailer();
+		
+		// 是否启用smtp的debug进行调试 开发环境建议开启 生产环境注释掉即可 默认关闭debug调试模式
+		$mail->SMTPDebug = 1;
+		
+		// 使用smtp鉴权方式发送邮件
+		$mail->isSMTP();
+		
+		// smtp需要鉴权 这个必须是true
+		$mail->SMTPAuth = true;
+		
+		// 链接qq域名邮箱的服务器地址
+		$mail->Host = 'Shmail.hylinkad.com';
+		
+		// 设置使用ssl加密方式登录鉴权
+		//$mail->SMTPSecure = 'ssl';
+		
+		// 设置ssl连接smtp服务器的远程服务器端口号
+		$mail->Port = 25;
+		
+		// 设置发送的邮件的编码
+		$mail->CharSet = 'UTF-8';
+		
+		// 设置发件人昵称 显示在收件人邮件的发件人邮箱地址前的发件人姓名
+		$mail->FromName = 'Your Excel System';
+		
+		// smtp登录的账号 QQ邮箱即可
+		$mail->Username = 'yes@pagechoice.com';
+		
+		// smtp登录的密码 使用生成的授权码
+		$mail->Password = 'hy888888';
+		
+		// 设置发件人邮箱地址 同登录账号
+		$mail->From = 'yes@pagechoice.com';
+		
+		// 邮件正文是否为html编码 注意此处是一个方法
+		$mail->isHTML(true);
+		
+		// 设置收件人邮箱地址
+		//$mail->addAddress($address);
+		for($i = 0; $i < count($address_list); $i++) {
+			$mail->addAddress($address_list[$i]);
+		}
+		
+		// 添加该邮件的主题
+		$mail->Subject = '新建问题通知';
+		
+		// 添加邮件正文
+		$mail->Body = $body;
+		
+		// 为该邮件添加附件
+		//$mail->addAttachment('./example.pdf');
+		
+		// 发送邮件 返回状态
+		$status = $mail->send();
+
+		if(!$status) {
+			return "[send mail] error: " . $mail->ErrorInfo;
+		}
+		
+		return "[send mail] ok";
+		
+	}
+	
+	
 	class ResultObject {
 		public $ecode;
 		public $errorMsg;
 		public $timestamp;
+		public $sendmailinfo;
 
 		function __construct($ecode = 0, $errorMsg = "") {
 			$this->ecode = $ecode;
 			$this->errorMsg = $errorMsg;
 			$this->timestamp = date('Y-m-d H:i:s',time());
+			$this->sendmailinfo = "";
 		}
 	}
 
@@ -45,7 +118,27 @@
 		$conn_mysqli->close();
 
 		//
+		$sendMailInfo = "";
+		if(count(Config::$answer_mail_list) > 0) {
+			$mailbody = '<h2>Your Excel System有新问题提交</h2>';
+			$mailbody .= '<b>问题描述:</b> <br/><pre><code>' . $desc . '</code></pre><br/><br/>';
+			if($fileurl === "") {
+				$mailbody .= '<b>问题文件:</b> 无<br/><br/>';
+			} else {
+				$mailbody .= '<b>问题文件:</b> <a href="' . $_SERVER['HTTP_HOST'] . $fileurl . '" download="' . $filename . '">下载</a><br/><br/>';
+			}
+			$mailbody .= '<b>网站链接:</b> <a href="' . $_SERVER['HTTP_HOST'] . '/excelqa.html">http://' . $_SERVER['HTTP_HOST'] . '/excelqa.html</a><br/><br/>';
+						
+			
+			$sendMailInfo = SendMail(Config::$answer_mail_list, $mailbody);
+			
+			//print_r($mailbody);
+		}
+
+
+		//
 		$returnObj = new ResultObject();
+		$returnObj->sendmailinfo = $sendMailInfo;
 		return $returnObj;
 		
 	}
