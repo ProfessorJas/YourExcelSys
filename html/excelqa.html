@@ -79,7 +79,7 @@
 				<form class="form-inline">
 					<input type="text" class="form-control" placeholder="编号/文件名/问题描述" name="keyword" id="keyword" style="line-height: 36px; font-size: 14px;">
 					<button type="button" class="btn btn-primary" onclick="select_pg_first()" style="border-radius:0.3rem; font-size: 14px;">查询</button>
-					<button type="button" class="btn btn-success" onclick="open_addnew_modal()"  style="border-radius:0.3rem; background-color: #217346; font-size: 14px;"><span class="glyphicon glyphicon-plus">添加问题</button>
+					<button type="button" class="btn btn-success" onclick="open_addnew_modal()"  style="border-radius:0.3rem; background-color: #217346; font-size: 14px;"><span class="glyphicon glyphicon-plus">添加问题</span></button>
 					
 					<!-- <button type="button" class="btn btn-primary" onclick="test()">test</button> -->
 					
@@ -190,15 +190,15 @@
 									</td>
 								</tr>
 							</table>
-							<p class="help-block">* 请上传xlsx文件，多个文件请压缩为zip再上传。上传文件最大容量为5M</p>
+							<p class="help-block">* 请上传xlsx文件，多个文件请压缩为zip文件再上传。上传文件最大容量为5M</p>
 						</div>
 						<div class="form-group">
 							<label for="form_addnew_email" class="control-label">Email:</label>
 							<input type="text" class="form-control" placeholder="输入Email地址" name="email" id="form_addnew_email"></input>
 						</div>
-						<div class="form-group">
+						<div class="form-group" style="display:none">
 							<label for="form_addnew_phone" class="control-label">Tel:</label>
-							<input type="text" class="form-control" placeholder="输入电话号码" name="phone" id="form_addnew_phone"></input>
+							<input type="text" class="form-control" placeholder="输入手机电话号码" name="phone" id="form_addnew_phone"></input>
 						</div>
 						<span class="help-block alert-danger" id="form_addnew_hint"></span>
   
@@ -238,7 +238,7 @@
 						<div class="form-group">
 							<label for="form_edit_file" class="control-label addRedStar">上传文件:</label>
 							<input type="file" class="form-control-file" accept=".xlsx, .zip" name="file" id="form_edit_file"></input>
-							<p class="help-block">* 请上传xlsx文件，多个文件请压缩为zip再上传。上传文件最大容量为5M</p>
+							<p class="help-block">* 请上传xlsx文件，多个文件请压缩为zip文件再上传。上传文件最大容量为5M</p>
 						</div>
 						
 						<div class="form-check">
@@ -248,7 +248,7 @@
 							</label>
 						</div>
 
-						<div class="form-check">
+						<div class="form-check" style="display:none">
 							<label class="form-check-label">
 								<input class="form-check-input" type="checkbox" value="" id="check_form_edit_phone">
 								发送短信通知提问者
